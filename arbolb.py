@@ -16,7 +16,7 @@ class Arbol_B:
             raiz.insertarNodo(k)
 
     def buscar(self, k, x = None):
-        if estaInstanciada(x, nodo):
+        if isinstance(x, nodo):
             i = 0
             while i< len(x.llaves) and k > x.llaves[i]:
                 i += 1
@@ -126,4 +126,3 @@ class Arbol_B:
                 nodo_hijo.hijos.append(nodo_hermano.hijos[j])
         x.hijos.pop(i + 1)
 
-        
