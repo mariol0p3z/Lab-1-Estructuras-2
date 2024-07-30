@@ -1,22 +1,55 @@
-import nodo
+from nodo import Nodo
 class Arbol_B:
     def __init__(self, grado):
-        self.raiz = nodo.Nodo(True)
+        self.raiz = Nodo(True)
         self.grado = grado
+
+    def mostrar(self):
+        self.raiz.mostrar()
     
     def insertar(self, k):
         raiz = self.raiz
         if len(raiz.llaves) == (2*self.grado) - 1:
-            tmp = nodo()
+            tmp = Nodo()
             self.raiz = tmp
-            tmp.hijos.insert(0, raiz)
-            tmp.dividirNodo(0)
-            tmp.insertarNodo(k)
+            tmp.hijos.append(raiz)
+            self.dividirNodo(tmp, 0)
+            self.insertarNodo(tmp,k)
         else:
-            raiz.insertarNodo(k)
+            self.insertarNodo(raiz, k)
+
+    def insertarNodo(self,x, k):
+        i = len(x.llaves) -1
+        if x.Eshoja:
+            x.llaves.append(None)
+            while i >= 0 and k <x.llaves[i]:
+                x.llaves[i+1] = x.llaves[i]
+                i -= 1
+            x.llaves[i+1] = k
+        else:
+            while i>=0 and k < x.llaves[i]:
+                i = -1
+            i += 1
+            if len(x.hijos[i].llaves) == (2 *self.grado) - 1:
+                self.dividirNodo(x,i)
+                if k > x.llaves[i]:
+                    i += 1
+            self.insertarNodo(x.hijos[i], k)
+    
+    def dividirNodo(self,x, i):
+        t = self.grado
+        y = x.hijos[i]
+        z = Nodo(EsHoja = y.Eshoja)
+        x.llaves.insert(i, y.llaves[t-1])
+        z.llaves = y.llaves[t:(2*t) -1]
+        y.llaves = y.llaves[0:(t-1)]
+        if not y.Eshoja:
+            z.hijos = y.hijos[t:(2*t)]
+            y.hijos = y.hijos[0:t]
+        x.hijos.insert(i + 1, z)
 
     def buscar(self, k, x = None):
-        if isinstance(x, nodo):
+        if isinstance(x, Nodo):
             i = 0
             while i< len(x.llaves) and k > x.llaves[i]:
                 i += 1
@@ -125,4 +158,3 @@ class Arbol_B:
             for j in range(len(nodo_hermano.hijos)):
                 nodo_hijo.hijos.append(nodo_hermano.hijos[j])
         x.hijos.pop(i + 1)
-
