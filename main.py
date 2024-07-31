@@ -23,11 +23,20 @@ class main():
         
         self.arbol.mostrar()
 
-        resultado = self.arbol.buscarNombre("diego")
-        if resultado:
-            print(f"El valor con nombre 'diego' se encontro: {resultado}")
-        else:
-            print("No se encontro el valor con nombre 'diego'")
+        print("*************************************************************************************************************************")
+        print(self.arbol.buscarNombre("juan"))
+        print("*************************************************************************************************************************")
+        self.arbol.actualizar("23456789", "juan", {"address": "nueva direccion en peru", "dateBirth": "01/01/1991"})
+        print("*************************************************************************************************************************")
+        resultado = self.arbol.buscar_por_nombre_y_dpi("23456789", "juan")
+        print(resultado)
+        print("*************************************************************************************************************************")
+        self.arbol.eliminar("89012345", "juan")
+        print(self.arbol.buscarNombre("juan"))
+        print("*************************************************************************************************************************")
+        print(self.arbol.buscar_por_nombre_y_dpi("89012345", "juan"))
+        print("*************************************************************************************************************************")
+        self.arbol.mostrar()
 
 if __name__ == '__main__':
     main()

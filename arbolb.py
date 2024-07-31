@@ -83,99 +83,72 @@ class Arbol_B:
                 resultados.extend(self.buscarNombre(nombre, hijo))
         return resultados
 
-    def eliminar(self, k):
-        self.eliminarNodo(self.raiz, k)
-    
-    def eliminarNodo(self, x, k):
-        t = self.grado
-        i = 0
-        while i < len(x.llaves) and k > x.llaves[i]:
-            i += 1
-        if i < len(x.llaves) and x.llaves[i] == k:
-            if x.esHoja:
-                x.llaves.pop[i]
+    def eliminar(self, dpi, nombre):
+        self.raiz = self.eliminarNodo(self.raiz, dpi, nombre)
+
+    def eliminarNodo(self, x, dpi, nombre):
+        if x is None:
+            return x
+        i = x.buscarLlaves({'dpi':dpi})
+        if i < len(x.llaves) and x.llaves[i]['dpi'] == dpi and x.llaves[i]['name'] == nombre:
+            if x.Eshoja:
+                x.llaves.pop(i)
+                return x
             else:
-                self.eliminarNodoPadre(x, i)
+                raise NotImplementedError("La eliminacion de nodos internos no esta implementada")
+        if x.Eshoja:
+            return x
+        if len(x.hijos[i].llaves) < self.grado:
+            self.llenar(x,i)
+        if i <len(x.llaves) and x.llaves[i]['dpi'] == dpi and x.llaves[i]['name'] == nombre:
+            self.eliminarNodo(x.hijos[i+1], dpi, nombre)
         else:
-            if x.esHoja:
-                return
-            bandera = i(i== len(x.llaves))
-            if len(x.hijos[i].llaves) < t:
-                self.llenar(x, i)
-            if bandera and i > len(x.llaves):
-                self.eliminarNodo(x.hijos[i-1], k)
-            else:
-                self.eliminarNodo(x.hijos[i], k)
-    
-    def eliminarNodoPadre(self, x, i):
-        k = x.llaves[i]
-        if len(x.hijos[i].llaves) >= self.grado:
-            ant = self.obtenerAnterior(x,i)
-            x.llaves[i] = ant
-            self.eliminarNodo(x.hijos[i], ant)
-        elif len(x.hijos[i+1].llaves) >= self.grado:
-            sig = self.obtenerSiguiente(x, i)
-            x.llaves[i] = sig
-            self.eliminarNodo(x.hijos[i+1], sig)
+            self.eliminarNodo(x.hijos[i], dpi, nombre)
+        
+        return x
+
+    def actualizar(self, dpi, nombre, nuevos_valores):
+        nodo = self.buscar_por_nombre_y_dpi(dpi, nombre)
+        if nodo:
+            nodo.update(nuevos_valores)
+            print(f"Datos actualizados: {nodo}")
         else:
-            self.unirNodo(x, i)
-            self.eliminarNodo(x.hijos[i], k)
+            print("No se encontro el dato para actualizar")
 
-    def obtenerAnterior(self, x, i):
-        tmp = x.hijos[i]
-        while not tmp.esHoja:
-            tmp = tmp.hijos[len(tmp.hijos) - 1]
-        return tmp.llaves[len(tmp.llaves) -1]
-
-    def obtenerSiguiente(self, x, i):
-        tmp = x.hijos[i + 1]
-        while not tmp.esHoja:
-            tmp = tmp.hijos[0]
-        return tmp.llaves[0]
-
-    def llenar(self, x, i):
+    def llenar(self, x,i):
         if i != 0 and len(x.hijos[i-1].llaves) >= self.grado:
-            self.prestarNodoAnt(x, i)
-        elif i != len(x.hijos) - 1 and len(x.hijos[i+1].llaves) >= self.grado:
-            self.prestarNodoSig(x, i)
+            self.prestarAnterior(x,i)
+        elif i != len(x.hijos) -1 and len(x.hijos[i+1].llaves) >= self.grado:
+            self.prestarSiguiente(x,i)
         else:
-            if i != len(x.hijos) - 1:
-                self.unir(x,i)
+            if i != len(x.hijos) -1:
+                self.unir(x, i)
             else:
                 self.unir(x, i -1)
     
-    def prestarNodoAnt(self, x, i):
-        nodo_hijo = x.hijos[i]
-        nodo_hermano = x.hijos[i - 1]
-        for j in range(len(nodo_hijo.llaves)-1, -1, -1):
-            nodo_hijo.llaves[j+1] = nodo_hijo.llaves[j]
-        if not nodo_hijo.esHoja:
-            for j in range(len(nodo_hijo.hijos) -1, -1,-1):
-                nodo_hijo.hijos[j+1] = nodo_hijo.hijos[j]
-        nodo_hijo.llaves[0] = x.llaves[i -1]
-        if not x.esHoja:
-            nodo_hijo.hijos[0] = nodo_hermano.hijos[len(nodo_hermano.hijos) -1]
-        x.llaves[i - 1] = nodo_hijo.llaves.pop()
-        if not nodo_hermano.esHoja:
-            nodo_hermano.hijos.pop()
-        
-    def prestarNodoSig(self, x, i):
-        nodo_hijo = x.hijos[i]
-        nodo_hermano = x.hijos[i+1]
-        nodo_hijo.llaves.append(x.llaves[i])
-        if not nodo_hijo.esHoja:
-            nodo_hijo.hijos.append(nodo_hermano.hijos[0])
-        x.llaves[i] = nodo_hermano.llaves.pop(0)
-        if not nodo_hermano.esHoja:
-            nodo_hermano.hijos.pop(0)
-        
-    def unir(self, x,i):
-        nodo_hijo = x.hijos[i]
-        nodo_hermano = x.hijos[i + 1]
-        nodo_hijo.llaves.append(x.llaves.pop(i))
-        for j in range(len(nodo_hermano.llaves)):
-            nodo_hijo.llaves.append(nodo_hermano.llaves[j])
-        if not nodo_hijo.esHoja:
-            for j in range(len(nodo_hermano.hijos)):
-                nodo_hijo.hijos.append(nodo_hermano.hijos[j])
-        x.hijos.pop(i + 1)
+    def prestarAnterior(self, x, i):
+        hijo = x.hijos[i]
+        hermano = x.hijos[i-1]
+        hijo.llaves.insert(0, x.llaves[i -1])
+        if not hijo.Eshoja:
+            hijo.hijos.insert(0, hermano.hijos.pop())
+        x.llaves[i-1] = hermano.llaves.pop()
+
+    def prestarSiguiente(self, x, i):
+        hijo = x.hijos[i]
+        hermano = x.hijos[i+1]
+        hijo.llaves.append(x.llaves[i])
+        if not hijo.Eshoja:
+            hijo.hijos.append(hermano.hijos.pop(0))
+        x.llaves[i] = hermano.llaves.pop(0)
+
+    def unir(self, x, i):
+        hijo = x.hijos[i]
+        hermano = x.hijos[i+1]
+        hijo.llaves.append(x.llaves.pop(i))
+        hijo.llaves.extend(hermano.llaves)
+        if not hijo.Eshoja:
+            hijo.hijos.extend(hermano.hijos)
+        x.hijos.pop(i+1)
+        if x == self.raiz and len(x.llaves) == 0:
+            self.raiz = hijo
