@@ -6,7 +6,7 @@ class Arbol_B:
 
     def mostrar(self):
         self.raiz.mostrar()
-    
+
     def insertar(self, k):
         raiz = self.raiz
         if len(raiz.llaves) == (2*self.grado) - 1:
@@ -22,24 +22,24 @@ class Arbol_B:
         i = len(x.llaves) -1
         if x.Eshoja:
             x.llaves.append(None)
-            while i >= 0 and k <x.llaves[i]:
-                x.llaves[i+1] = x.llaves[i]
+            while i >= 0 and x.llaves[i]['dpi'] > k['dpi']:
+                x.llaves[i + 1] = x.llaves[i]
                 i -= 1
             x.llaves[i+1] = k
         else:
-            while i>=0 and k < x.llaves[i]:
-                i = -1
+            while i >= 0 and x.llaves[i]['dpi'] > k['dpi']:
+                i -= 1
             i += 1
-            if len(x.hijos[i].llaves) == (2 *self.grado) - 1:
-                self.dividirNodo(x,i)
-                if k > x.llaves[i]:
+            if len(x.hijos[i].llaves) == (2*self.grado) - 1:
+                self.dividirNodo(x, i)
+                if x.llaves[i]['dpi'] < k['dpi']:
                     i += 1
             self.insertarNodo(x.hijos[i], k)
     
     def dividirNodo(self,x, i):
         t = self.grado
         y = x.hijos[i]
-        z = Nodo(EsHoja = y.Eshoja)
+        z = Nodo(y.Eshoja)
         x.llaves.insert(i, y.llaves[t-1])
         z.llaves = y.llaves[t:(2*t) -1]
         y.llaves = y.llaves[0:(t-1)]
@@ -49,19 +49,40 @@ class Arbol_B:
         x.hijos.insert(i + 1, z)
 
     def buscar(self, k, x = None):
-        if isinstance(x, Nodo):
-            i = 0
-            while i< len(x.llaves) and k > x.llaves[i]:
-                i += 1
-            if i < len(x.llaves) and k == x.llaves[i]:
-                return (x, i)
-            elif x.esHoja:
-                return None
+        if x is None:
+            x = self.raiz
+        i = x.buscarLlaves(k)
+        if i < len(x.llaves) and x.llaves[i]['dpi'] == k['dpi']:
+            return x,i
+        if x.Eshoja:
+            return None
+        return self.buscar(k, x.hijos[i])
+
+    def buscar_por_nombre_y_dpi(self, dpi, nombre, x = None):
+        if x is None:
+            x = self.raiz
+        i = x.buscarLlaves({'dpi':dpi})
+        if i < len(x.llaves) and x.llaves[i]['dpi'] == dpi:
+            if x.llaves[i]['name'] == nombre:
+                return x.llaves[i]
             else:
-                return self.buscar(k, x.hijos[i])
-        else:
-            return self.buscar(k, self.raiz)
+                return None
+        if x.Eshoja:
+            return None
+        return self.buscar_por_nombre_y_dpi(dpi, nombre, x.hijos[i])
     
+    def buscarNombre(self, nombre, x = None):
+        if x is None:
+            x = self.raiz
+        resultados = []
+        for llave in x.llaves:
+            if llave['name'] == nombre:
+                resultados.append(llave)
+        if not x.Eshoja:
+            for hijo in x.hijos:
+                resultados.extend(self.buscarNombre(nombre, hijo))
+        return resultados
+
     def eliminar(self, k):
         self.eliminarNodo(self.raiz, k)
     
