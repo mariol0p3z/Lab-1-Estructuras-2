@@ -1,9 +1,10 @@
 from nodo import Nodo
+
 class Arbol_B:
     def __init__(self, grado):
         self.raiz = Nodo(True)
         self.grado = grado
-
+        
     def mostrar(self):
         self.raiz.mostrar()
 
@@ -83,35 +84,63 @@ class Arbol_B:
                 resultados.extend(self.buscarNombre(nombre, hijo))
         return resultados
 
-    def eliminar(self, dpi, nombre):
-        self.raiz = self.eliminarNodo(self.raiz, dpi, nombre)
+    def eliminar(self, k):
+        self.eliminarNodo(self.raiz, k)
+        if len(self.raiz.llaves) == 0:
+            if not self.raiz.Eshoja:
+                self.raiz = self.raiz.hijos[0]
+            else:
+                self.raiz = None
 
-    def eliminarNodo(self, x, dpi, nombre):
-        if x is None:
-            return x
-        i = x.buscarLlaves({'dpi':dpi})
-        if i < len(x.llaves) and x.llaves[i]['dpi'] == dpi and x.llaves[i]['name'] == nombre:
+    def eliminarNodo(self, x, k):
+        i = x.buscarLlaves(k)
+        if i < len(x.llaves) and x.llaves[i]["dpi"] == k["dpi"] and x.llaves[i]["name"] == k["name"]:
             if x.Eshoja:
                 x.llaves.pop(i)
-                return x
             else:
-                raise NotImplementedError("La eliminacion de nodos internos no esta implementada")
-        if x.Eshoja:
-            return x
-        if len(x.hijos[i].llaves) < self.grado:
-            self.llenar(x,i)
-        if i <len(x.llaves) and x.llaves[i]['dpi'] == dpi and x.llaves[i]['name'] == nombre:
-            self.eliminarNodo(x.hijos[i+1], dpi, nombre)
+                self.eliminarNodoInterno(x, k, i)
         else:
-            self.eliminarNodo(x.hijos[i], dpi, nombre)
-        
-        return x
+            if x.Eshoja:
+                return
+            f = (i == len(x.llaves))
+            if len(x.hijos[i].llaves) < self.grado:
+                self.llenar(x, i)
+            if f and i > len(x.llaves):
+                self.eliminarNodo(x.hijos[i-1], k)
+            else:
+                self.eliminarNodo(x.hijos[i], k)
+
+    def eliminarNodoInterno(self, x, k, i):
+        t = self.grado
+        if len(x.hijos[i].llaves) >= t:
+            anterior = self.getAnterior(x, i)
+            x.llaves[i] = anterior
+            self.eliminarNodo(x.hijos[i], anterior)
+        elif len(x.hijos[i+1].llaves) >= t:
+            siguiente = self.getSiguiente(x, i)
+            x.llaves[i] = siguiente
+            self.eliminarNodo(x.hijos[i+1], siguiente)
+        else:
+            self.unir(x, i)
+            self.eliminarNodo(x.hijos[i], k)
+
+    def getAnterior(self, x, i):
+        tmp = x.hijos[i]
+        while not tmp.Eshoja:
+            tmp = tmp.hijos[len(tmp.llaves)]
+        return tmp.llaves[len(tmp.llaves) -1]
+
+    def getSiguiente(self, x, i):
+        tmp = x.hijos[i + 1]
+        while not tmp.Eshoja:
+            tmp = tmp.hijos[0]
+        return tmp.llaves[0]
 
     def actualizar(self, dpi, nombre, nuevos_valores):
         nodo = self.buscar_por_nombre_y_dpi(dpi, nombre)
         if nodo:
             nodo.update(nuevos_valores)
-            print(f"Datos actualizados: {nodo}")
+            #print(f"Datos actualizados: {nodo}")
         else:
             print("No se encontro el dato para actualizar")
 

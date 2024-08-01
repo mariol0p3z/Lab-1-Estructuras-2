@@ -5,10 +5,10 @@ class Nodo:
         self.Eshoja = Eshoja
         
     def buscarLlaves(self, k):
-        i = 0
-        while i<len(self.llaves) and self.llaves[i]['dpi'] < k['dpi']:
-            i += 1
-        return i
+        for i, item in enumerate(self.llaves):
+            if k["dpi"] <= item["dpi"]:
+                return i 
+        return len(self.llaves)
 
     def mostrar(self, nivel = 0):
         print(f"Nivel {nivel}: {self.llaves}")
