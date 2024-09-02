@@ -35,16 +35,18 @@ class main():
                 llaves = resultados[0].keys()
                 with open(nombre_archivo, mode = 'w', newline='', encoding='utf-8') as archivo:
                     escritor = csv.DictWriter(archivo, fieldnames= llaves)
-                    escritor.writeheader()
                     escritor.writerows(resultados)
                 print(f"Resultados guardados en {nombre_archivo}")
             else:
                 print("No hay resultados para guardar")
 
-        leerArchivo(self.arbol, 'challenge.csv')
-        prueba = self.arbol.buscarNombre("Edgar".lower())
+        nombre_archivo = input("Ingrese el nombre del archivo: ")
+        leerArchivo(self.arbol, nombre_archivo)
+
+        nombre_busqueda = input("Ingrese el nombre a buscar: ")
+        prueba = self.arbol.buscarNombre(nombre_busqueda.lower())
         imprimirResultados(prueba)
-        exportarSalida(prueba, 'Salidas/edgar.csv')
+        exportarSalida(prueba, 'Salidas/' + nombre_busqueda +'.csv')
 
 
 if __name__ == '__main__':
