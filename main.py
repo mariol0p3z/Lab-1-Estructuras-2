@@ -40,6 +40,15 @@ class main():
             else:
                 print("No hay resultados para guardar")
 
+        def exportarJSON(resultados, nombre_archivo):
+            if resultados:
+                with open(nombre_archivo, mode = 'w', encoding='utf-8') as archivo:
+                    json.dump(resultados, archivo, indent=4, ensure_ascii=False)
+                print(f"Resultados guardados en {nombre_archivo}")
+            else:
+                print("No hay resultados para guardar")
+
+
         nombre_archivo = input("Ingrese el nombre del archivo: ")
         leerArchivo(self.arbol, nombre_archivo)
 
@@ -47,6 +56,7 @@ class main():
         prueba = self.arbol.buscarNombre(nombre_busqueda.lower())
         imprimirResultados(prueba)
         exportarSalida(prueba, 'Salidas/' + nombre_busqueda +'.csv')
+        exportarJSON(prueba, 'Salidas/' + nombre_busqueda +'.json')
 
 
 if __name__ == '__main__':
