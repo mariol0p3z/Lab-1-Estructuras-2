@@ -58,10 +58,13 @@ class main():
         exportarSalida(prueba, 'Salidas/' + nombre_busqueda +'.csv')
         exportarJSON(prueba, 'Salidas/' + nombre_busqueda +'.json')
 
-        dpi = input("Ingrese el dpi a buscar: ")
-        nombre = input("Ingrese el nombre a buscar: ")
-
-        print(self.arbol.buscar_por_nombre_y_dpi(dpi, nombre.lower()))
+        while True:
+            dpi = input("Ingrese el dpi a buscar: ")
+            nombre = input("Ingrese el nombre a buscar: ")
+            print(self.arbol.buscar_por_nombre_y_dpi(dpi, nombre.lower()))
+            res = input("¿Desea realizar otra busqueda? ")
+            if res.lower() != "si":
+                break
 
 if __name__ == '__main__':
     main()
